@@ -63,28 +63,75 @@ const ensureOrigin = (url) => {
   return url.includes('origin=') ? url : `${url}&origin=*`
 }
 
-const buildWikiImageApi = (wrestler) => {
-  if (wrestler?.wikiPageImageApi) {
-    return ensureOrigin(wrestler.wikiPageImageApi)
-  }
+const encodeWikiTitle = (value) => {
+  if (!value) return null
+  return encodeURIComponent(value.trim().replace(/\s+/g, '_'))
+}
 
-  const wikiUrl = wrestler?.wiki || wrestler?.wikipediaUrl
-  if (wikiUrl) {
-    const title = wikiUrl.split('/').pop()
-    if (title) {
-      return `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&redirects=1&pithumbsize=600&titles=${title}&origin=*`
+const buildWikiTitleCandidates = (wrestler) => {
+  const candidates = []
+  const addCandidate = (value) => {
+    const encoded = encodeWikiTitle(value)
+    if (!encoded) return
+    if (!candidates.includes(encoded)) {
+      candidates.push(encoded)
     }
   }
 
-  if (wrestler?.name) {
-    const encoded = encodeURIComponent(wrestler.name)
-    return `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&redirects=1&pithumbsize=600&titles=${encoded}&origin=*`
+  const fromUrl = (url) => {
+    if (!url || typeof url !== 'string') return
+    const slug = url.split('/').pop()
+    if (slug) addCandidate(decodeURIComponent(slug))
   }
 
-  return null
+  if (typeof wrestler?.wikiTitle === 'string') {
+    addCandidate(wrestler.wikiTitle)
+  }
+
+  fromUrl(wrestler?.wiki)
+  fromUrl(wrestler?.wikipediaUrl)
+
+  if (typeof wrestler?.wikiSummaryApi === 'string') {
+    const titleParam = wrestler.wikiSummaryApi.split('/').pop()
+    if (titleParam) {
+      addCandidate(decodeURIComponent(titleParam))
+    }
+  }
+
+  if (typeof wrestler?.wikiPageImageApi === 'string') {
+    const titlesMatch = wrestler.wikiPageImageApi.match(/titles=([^&]+)/)
+    if (titlesMatch?.[1]) {
+      addCandidate(decodeURIComponent(titlesMatch[1]))
+    }
+  }
+
+  if (typeof wrestler?.name === 'string') {
+    addCandidate(wrestler.name)
+    addCandidate(`${wrestler.name} (wrestler)`)
+    addCandidate(`${wrestler.name} (professional wrestler)`)
+  }
+
+  return candidates
+}
+
+const buildWikiImageApi = (wrestler) => {
+  const candidates = buildWikiTitleCandidates(wrestler)
+  if (candidates.length === 0) return null
+
+  const title = candidates[0]
+  return `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&redirects=1&pithumbsize=600&titles=${title}&origin=*`
+}
+
+const buildWikiSummaryApi = (title) => {
+  if (!title) return null
+  return `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`
 }
 
 const buildWikiUrl = (wrestler) => {
+  if (typeof wrestler?.wikiTitle === 'string' && wrestler.wikiTitle) {
+    return `https://en.wikipedia.org/wiki/${wrestler.wikiTitle}`
+  }
+
   const raw =
     (typeof wrestler?.wikipediaUrl === 'string' && wrestler.wikipediaUrl) ||
     (typeof wrestler?.wiki === 'string' && wrestler.wiki) ||
@@ -117,6 +164,47 @@ const fetchWikiImage = async (wrestler) => {
   const pages = data?.query?.pages || {}
   const page = Object.values(pages)[0]
   return page?.thumbnail?.source || null
+}
+
+const isWrestlerSummary = (data) => {
+  if (!data || typeof data !== 'object') return false
+  if (data.type === 'disambiguation') return false
+  const text = `${data.description || ''} ${data.extract || ''}`.toLowerCase()
+  return text.includes('wrestler') || text.includes('professional wrestling')
+}
+
+const fetchWikiSummary = async (wrestler) => {
+  const candidates = buildWikiTitleCandidates(wrestler)
+  for (const title of candidates) {
+    const apiUrl = buildWikiSummaryApi(title)
+    if (!apiUrl) continue
+    const response = await fetch(apiUrl)
+    if (!response.ok) continue
+    const data = await response.json()
+    if (!isWrestlerSummary(data)) continue
+
+    const extract = data.extract || data.description || ''
+    if (!extract) continue
+
+    const description = data.description || ''
+    const canonicalTitle =
+      data.titles?.canonical || data.titles?.normalized || title
+    const pageUrl =
+      data.content_urls?.desktop?.page ||
+      `https://en.wikipedia.org/wiki/${canonicalTitle}`
+    const imageUrl =
+      data.originalimage?.source || data.thumbnail?.source || null
+
+    return {
+      extract,
+      description,
+      title: canonicalTitle,
+      pageUrl,
+      imageUrl,
+    }
+  }
+
+  return null
 }
 
 const buildRun = (wrestlers, count) => {
@@ -177,6 +265,7 @@ function useRun() {
   const [error, setError] = useState('')
   const timerStart = useRef(Date.now())
   const imageFetches = useRef(new Set())
+  const summaryFetches = useRef(new Set())
 
   useEffect(() => {
     let active = true
@@ -264,6 +353,35 @@ function useRun() {
         setWrestlers((prev) =>
           prev.map((wrestler) =>
             wrestler.id === current.id ? { ...wrestler, imageUrl } : wrestler,
+          ),
+        )
+      })
+      .catch(() => {})
+  }, [current])
+
+  useEffect(() => {
+    if (!current || current.wikiSummary || summaryFetches.current.has(current.id)) {
+      return
+    }
+
+    summaryFetches.current.add(current.id)
+
+    fetchWikiSummary(current)
+      .then((summary) => {
+        if (!summary) return
+        setWrestlers((prev) =>
+          prev.map((wrestler) =>
+            wrestler.id === current.id
+              ? {
+                  ...wrestler,
+                  wikiSummary: summary.extract,
+                  wikiSummaryDescription: summary.description,
+                  wiki: summary.pageUrl || wrestler.wiki,
+                  wikipediaUrl: summary.pageUrl || wrestler.wikipediaUrl,
+                  wikiTitle: summary.title || wrestler.wikiTitle,
+                  imageUrl: wrestler.imageUrl || summary.imageUrl || null,
+                }
+              : wrestler,
           ),
         )
       })

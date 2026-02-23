@@ -49,6 +49,7 @@ function Play() {
   const [poolChoice, setPoolChoice] = useState('top100')
   const [isTableOpen, setIsTableOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
+  const [shareVariant, setShareVariant] = useState(0)
 
   const poolOptions = useMemo(() => {
     const total = totalWrestlers || 0
@@ -102,6 +103,49 @@ function Play() {
     return list
   }, [better, locked, worse])
 
+  const wikiExcerpt = useMemo(() => {
+    if (!current) return ''
+    const summary =
+      (typeof current.wikiSummary === 'string' && current.wikiSummary.trim()) ||
+      (typeof current.wikiSummaryDescription === 'string' &&
+        current.wikiSummaryDescription.trim()) ||
+      ''
+
+    if (!summary) return ''
+    return summary.length > 520 ? `${summary.slice(0, 517).trim()}...` : summary
+  }, [current])
+
+  const betterSample = useMemo(() => better.slice(0, 10), [better])
+  const worseSample = useMemo(() => worse.slice(0, 10), [worse])
+
+  const shareVariants = [
+    {
+      id: 'logoLists',
+      label: 'Hero Lists',
+      blurb: 'Logo header with 10 picks per side.',
+    },
+    {
+      id: 'impactDial',
+      label: 'Impact Dial',
+      blurb: 'Big dial energy with stat chips.',
+    },
+    {
+      id: 'posterized',
+      label: 'Posterized',
+      blurb: 'Vertical poster with gradient bands.',
+    },
+    {
+      id: 'taleOfTape',
+      label: 'Tale of Tape',
+      blurb: 'Side-by-side tale of the tape.',
+    },
+    {
+      id: 'minimalWave',
+      label: 'Minimal Wave',
+      blurb: 'Clean text-first share tile.',
+    },
+  ]
+
   useEffect(() => {
     if (settings?.pool) {
       setPoolChoice(settings.pool)
@@ -147,6 +191,248 @@ function Play() {
     const shareUrl = links[platform]
     if (shareUrl) {
       window.open(shareUrl, '_blank', 'noopener,noreferrer')
+    }
+  }
+
+  const renderShareCard = (variantId) => {
+    switch (variantId) {
+      case 'impactDial':
+        return (
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-black via-fuchsia-900/40 to-lime-900/40 p-6 text-white shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.4em] text-white/60">
+              <span>The Ass Index</span>
+              <span>{new Date().getFullYear()}</span>
+            </div>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <img src={assIndexLogo} alt="Ass Index logo" className="h-14 w-auto" />
+              <div className="relative flex h-40 w-40 items-center justify-center rounded-full border-4 border-lime-300/70 bg-black/70 text-center">
+                <span className="text-5xl font-black text-lime-200">
+                  {better.length}
+                </span>
+                <span className="absolute inset-x-4 top-3 text-[0.55rem] uppercase tracking-[0.4em] text-white/60">
+                  Better
+                </span>
+                <span className="absolute inset-x-4 bottom-3 text-[0.55rem] uppercase tracking-[0.4em] text-white/40">
+                  Than Billy
+                </span>
+              </div>
+              <p className="text-lg font-semibold text-fuchsia-100">
+                Out of {poolSize} wrestlers
+              </p>
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs uppercase tracking-[0.3em]">
+              <div className="rounded-2xl border border-lime-300/40 bg-lime-300/10 px-3 py-2">
+                <p className="text-lime-200/80">Better</p>
+                <p className="text-2xl font-bold text-lime-200">{better.length}</p>
+              </div>
+              <div className="rounded-2xl border border-fuchsia-300/40 bg-fuchsia-300/10 px-3 py-2">
+                <p className="text-fuchsia-200/80">Worse</p>
+                <p className="text-2xl font-bold text-fuchsia-200">{worse.length}</p>
+              </div>
+              <div className="rounded-2xl border border-white/20 bg-white/5 px-3 py-2">
+                <p className="text-white/70">Pool</p>
+                <p className="text-2xl font-bold text-white">{poolSize}</p>
+              </div>
+            </div>
+          </div>
+        )
+      case 'posterized':
+        return (
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-fuchsia-700/30 via-zinc-950 to-lime-600/20 p-6 text-white shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+            <div className="flex flex-col gap-2 text-center">
+              <p className="text-xs uppercase tracking-[0.5em] text-white/60">
+                Better or Worse
+              </p>
+              <h3 className="text-4xl font-black">BILLY GUNN CHECK</h3>
+            </div>
+            <p className="mt-6 text-center text-lg text-white/80">
+              You placed <span className="text-lime-200">{better.length}</span> names
+              above Billy Gunn across a {poolSize}-deep pool.
+            </p>
+            <div className="mt-6 space-y-3 text-sm">
+              <div className="rounded-2xl border border-white/15 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  Better Highlights
+                </p>
+                <p className="mt-2 font-medium text-white/90">
+                  {betterSample.length
+                    ? betterSample.join(' • ')
+                    : 'Keep ranking to build this list.'}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  Worse Highlights
+                </p>
+                <p className="mt-2 font-medium text-white/90">
+                  {worseSample.length
+                    ? worseSample.join(' • ')
+                    : 'Keep ranking to build this list.'}
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 text-center text-xs uppercase tracking-[0.5em] text-white/50">
+              #AssIndex
+            </div>
+          </div>
+        )
+      case 'taleOfTape':
+        return (
+          <div className="rounded-[32px] border border-white/10 bg-black/85 p-6 text-white shadow-[0_25px_45px_rgba(0,0,0,0.65)]">
+            <div className="flex items-center justify-between">
+              <img src={assIndexLogo} alt="Ass Index logo" className="h-12 w-auto" />
+              <img
+                src={betterOrWorseLogo}
+                alt="Better or Worse"
+                className="h-12 w-auto"
+              />
+            </div>
+            <p className="mt-6 text-center text-xs uppercase tracking-[0.4em] text-white/60">
+              Tale of the Tape
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-lime-300/30 bg-gradient-to-b from-lime-300/15 to-black/60 p-4">
+                <p className="text-xs uppercase tracking-[0.35em] text-lime-200/70">
+                  Better ({better.length})
+                </p>
+                <ul className="mt-3 space-y-2 text-sm text-white/85">
+                  {betterSample.length ? (
+                    betterSample.map((wrestler) => (
+                      <li
+                        key={`better-tape-${wrestler.id}`}
+                        className="rounded-xl border border-lime-200/20 bg-lime-200/5 px-3 py-2"
+                      >
+                        {wrestler.name}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-white/40">No entrants yet.</li>
+                  )}
+                </ul>
+              </div>
+              <div className="rounded-2xl border border-fuchsia-300/30 bg-gradient-to-b from-fuchsia-300/15 to-black/60 p-4">
+                <p className="text-xs uppercase tracking-[0.35em] text-fuchsia-200/70">
+                  Worse ({worse.length})
+                </p>
+                <ul className="mt-3 space-y-2 text-sm text-white/85">
+                  {worseSample.length ? (
+                    worseSample.map((wrestler) => (
+                      <li
+                        key={`worse-tape-${wrestler.id}`}
+                        className="rounded-xl border border-fuchsia-200/20 bg-fuchsia-200/5 px-3 py-2"
+                      >
+                        {wrestler.name}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-white/40">No entrants yet.</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+            <p className="mt-6 text-center text-base text-white/70">
+              Locked on Billy Gunn. Finish the fight at TheAssIndex.com
+            </p>
+          </div>
+        )
+      case 'minimalWave':
+        return (
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-r from-zinc-950 via-black to-zinc-900 p-6 text-white">
+            <div className="flex flex-col gap-2 text-left">
+              <p className="text-xs uppercase tracking-[0.4em] text-white/50">
+                The Ass Index
+              </p>
+              <h3 className="text-4xl font-semibold">My Billy Gunn Spread</h3>
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/50">
+                  Better
+                </p>
+                <p className="text-4xl font-bold text-lime-200">{better.length}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/50">
+                  Worse
+                </p>
+                <p className="text-4xl font-bold text-fuchsia-200">{worse.length}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/50">
+                  Pool
+                </p>
+                <p className="text-4xl font-bold text-white">{poolSize}</p>
+              </div>
+            </div>
+            <p className="mt-6 text-sm text-white/70">
+              Better picks: {betterSample.length ? betterSample.join(', ') : 'n/a'}
+            </p>
+            <p className="mt-2 text-sm text-white/70">
+              Worse picks: {worseSample.length ? worseSample.join(', ') : 'n/a'}
+            </p>
+            <p className="mt-4 text-xs uppercase tracking-[0.4em] text-white/40">
+              Screenshot this tile &amp; tag @billyassindex
+            </p>
+          </div>
+        )
+      case 'logoLists':
+      default:
+        return (
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-black/80 via-zinc-950 to-black/90 p-6 text-white shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <img src={assIndexLogo} alt="Ass Index logo" className="h-14 w-auto" />
+              <p className="text-xs uppercase tracking-[0.5em] text-white/60">
+                Official Share Card
+              </p>
+              <p className="text-4xl font-bold text-lime-200">
+                {better.length} better than Billy Gunn
+              </p>
+              <p className="text-sm uppercase tracking-[0.4em] text-white/50">
+                {poolSize} considered
+              </p>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+              <div className="rounded-2xl border border-lime-300/30 bg-lime-300/5 p-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-lime-200/80">
+                  Better Picks
+                </p>
+                <ul className="mt-3 space-y-2 text-white/90">
+                  {betterSample.length ? (
+                    betterSample.map((wrestler) => (
+                      <li
+                        key={`better-hero-${wrestler.id}`}
+                        className="rounded-xl border border-lime-200/20 bg-black/30 px-3 py-2"
+                      >
+                        {wrestler.name}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-white/40">Lock in your picks.</li>
+                  )}
+                </ul>
+              </div>
+              <div className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-300/5 p-4">
+                <p className="text-xs uppercase tracking-[0.4em] text-fuchsia-200/80">
+                  Worse Picks
+                </p>
+                <ul className="mt-3 space-y-2 text-white/90">
+                  {worseSample.length ? (
+                    worseSample.map((wrestler) => (
+                      <li
+                        key={`worse-hero-${wrestler.id}`}
+                        className="rounded-xl border border-fuchsia-200/20 bg-black/30 px-3 py-2"
+                      >
+                        {wrestler.name}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-white/40">Lock in your picks.</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )
     }
   }
 
@@ -327,24 +613,34 @@ function Play() {
                 </button>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-lime-300/30 bg-gradient-to-b from-lime-300/15 via-black/70 to-fuchsia-500/20 p-6 text-center">
-                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-                  The Ass Index
-                </p>
-                <p className="mt-3 text-5xl font-semibold text-lime-200">
-                  {better.length}
-                </p>
-                <div className="mt-4 flex flex-col items-center gap-3">
-                  <img
-                    src={locked?.imageUrl || locked?.image}
-                    alt={locked?.name || 'Billy Gunn'}
-                    className="h-40 w-28 rounded-2xl border border-white/10 object-cover"
-                  />
-                  <p className="text-lg font-semibold text-white">Billy Gunn</p>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                    Swipe a vibe
+                  </p>
+                  <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
+                    {shareVariants.map((variant, index) => {
+                      const active = index === shareVariant
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          onClick={() => setShareVariant(index)}
+                          className={`min-w-[140px] rounded-2xl border px-3 py-2 text-left transition ${
+                            active
+                              ? 'border-lime-300 bg-lime-300/10 text-white'
+                              : 'border-white/10 bg-black/40 text-white/70 hover:border-white/30'
+                          }`}
+                        >
+                          <p className="text-sm font-semibold">{variant.label}</p>
+                          <p className="text-xs text-white/60">{variant.blurb}</p>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
-                <p className="mt-4 text-3xl font-semibold text-fuchsia-200">
-                  out of {poolSize}
-                </p>
+
+                {renderShareCard(shareVariants[shareVariant]?.id)}
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
@@ -400,8 +696,8 @@ function Play() {
 
   return (
     <>
-      <section className="flex flex-col gap-6 pb-24 md:grid md:grid-cols-[1.3fr_0.3fr_1fr] md:pb-0 lg:gap-6">
-        <div className="rounded-3xl border border-white/10 bg-black/50 p-4 md:p-8">
+      <section className="flex flex-col gap-6 pb-24 lg:grid lg:h-[calc(100vh-240px)] lg:grid-cols-[1.35fr_0.85fr] lg:items-stretch lg:gap-8 lg:overflow-hidden lg:pb-0">
+        <div className="rounded-3xl border border-white/10 bg-black/50 p-4 md:p-8 lg:flex lg:h-full lg:flex-col">
           <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
             <span>Current Wrestler</span>
             <span>{remaining} remaining</span>
@@ -430,13 +726,13 @@ function Play() {
               </button>
             </div>
           ) : (
-            <div className="mt-4 space-y-3 md:mt-6 md:space-y-5">
-              <div className="grid gap-4 md:gap-6 md:grid-cols-[220px_1fr] md:items-start md:gap-x-[15px]">
-                <div className="space-y-3">
+            <div className="mt-4 space-y-3 md:mt-6 md:space-y-5 lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
+              <div className="grid gap-4 md:grid-cols-[240px_1fr] md:items-start md:gap-6 2xl:grid-cols-[280px_1fr] lg:h-full lg:grid-cols-[260px_1fr]">
+                <div className="space-y-3 lg:flex lg:flex-col">
                   <img
                     src={current.imageUrl || current.image}
                     alt={current.name}
-                    className="h-[280px] w-full rounded-2xl border border-white/10 object-cover sm:h-[320px] md:h-[300px]"
+                    className="h-[280px] w-full rounded-2xl border border-white/10 object-cover sm:h-[320px] md:h-[300px] lg:h-auto lg:flex-1"
                   />
                   <div className="flex flex-wrap items-center justify-center gap-3 text-center md:justify-start md:text-left">
                     <p className="text-sm text-white/70">{current.era}</p>
@@ -451,7 +747,7 @@ function Play() {
                   </div>
                 </div>
 
-                <div className="space-y-3 md:space-y-5">
+                <div className="space-y-3 md:space-y-5 lg:flex lg:flex-col">
                   <h2 className="text-3xl font-semibold text-white text-center md:text-left">
                     is {current.name}
                   </h2>
@@ -492,60 +788,127 @@ function Play() {
           )}
         </div>
 
-        <div className="hidden items-center justify-center lg:flex">
-          <span className="text-4xl text-white/30">-&gt;</span>
-        </div>
+        <div className="flex flex-col gap-6 lg:h-full lg:overflow-hidden">
+          <article className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 via-black/70 to-black/90 p-6 shadow-2xl lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
+              <span>Wikipedia dossier</span>
+              <span className="text-white/40">
+                {current ? 'Auto-updating' : 'Waiting for pick'}
+              </span>
+            </div>
+            {current ? (
+              <>
+                <h3 className="mt-3 text-2xl font-semibold text-white">
+                  {current.name}
+                </h3>
+                <div className="mt-3 flex-1 overflow-y-auto rounded-2xl border border-white/5 bg-black/30 p-4 text-sm leading-relaxed text-white/70 lg:max-h-[240px]">
+                  {wikiExcerpt ? (
+                    <p>{wikiExcerpt}</p>
+                  ) : (
+                    <p className="text-white/40">Pulling details from Wikipedia...</p>
+                  )}
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                  <div className="rounded-2xl border border-lime-300/30 bg-lime-300/5 px-3 py-2 text-center">
+                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-lime-200/70">
+                      Better
+                    </p>
+                    <p className="text-2xl font-semibold text-lime-200">
+                      {better.length}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-300/5 px-3 py-2 text-center">
+                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-fuchsia-200/70">
+                      Worse
+                    </p>
+                    <p className="text-2xl font-semibold text-fuchsia-200">
+                      {worse.length}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-center">
+                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-white/60">
+                      Remaining
+                    </p>
+                    <p className="text-2xl font-semibold text-white">
+                      {remaining}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/50">
+                    Source: Wikipedia summary
+                  </p>
+                  <a
+                    href={current.wiki}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-lime-200 transition hover:text-lime-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200"
+                  >
+                    Read full bio
+                    <span aria-hidden="true">-&gt;</span>
+                  </a>
+                </div>
+              </>
+            ) : (
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-white/60">
+                Start a run to auto-fill this space with the wrestler's
+                Wikipedia summary, quick stats, and a one-click link for deeper
+                lore dives.
+              </p>
+            )}
+          </article>
 
-        <div className="hidden rounded-3xl border border-white/10 bg-black/50 p-6 md:block">
-          <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
-            <span>Your Tables</span>
-            <span>{better.length + worse.length}</span>
-          </div>
-
-          <div className="mt-4 space-y-4">
-            <div className="rounded-2xl border border-lime-300/30 bg-lime-300/10 p-4">
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-lime-200">
-                <span>Better Table</span>
-                <span>{better.length}</span>
-              </div>
-              <div className="mt-3 max-h-[120px] space-y-2 overflow-y-auto pr-1">
-                {better.length === 0 ? (
-                  <p className="text-sm text-white/70">No picks yet.</p>
-                ) : (
-                  better.map((wrestler) => (
-                    <div
-                      key={wrestler.id}
-                      className="rounded-xl border border-lime-300/20 bg-black/30 px-3 py-2 text-sm text-white"
-                    >
-                      {wrestler.name}
-                    </div>
-                  ))
-                )}
-              </div>
+          <div className="hidden rounded-3xl border border-white/10 bg-black/50 p-6 md:block lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
+              <span>Your Tables</span>
+              <span>{better.length + worse.length}</span>
             </div>
 
-            <div className="rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.3em] text-white/80">
-              {locked ? 'Billy Gunn - Locked' : 'Billy Gunn - Locked'}
-            </div>
-
-            <div className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-300/10 p-4">
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-fuchsia-200">
-                <span>Worse Table</span>
-                <span>{worse.length}</span>
+            <div className="mt-4 flex flex-1 flex-col gap-4 overflow-hidden">
+              <div className="rounded-2xl border border-lime-300/30 bg-gradient-to-br from-lime-300/10 to-black/60 p-4">
+                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-lime-200">
+                  <span>Better Table</span>
+                  <span>{better.length}</span>
+                </div>
+                <div className="mt-3 flex-1 space-y-2 overflow-y-auto pr-1">
+                  {better.length === 0 ? (
+                    <p className="text-sm text-white/70">No picks yet.</p>
+                  ) : (
+                    better.map((wrestler) => (
+                      <div
+                        key={wrestler.id}
+                        className="rounded-xl border border-lime-300/20 bg-black/40 px-3 py-2 text-sm text-white"
+                      >
+                        {wrestler.name}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-              <div className="mt-3 max-h-[120px] space-y-2 overflow-y-auto pr-1">
-                {worse.length === 0 ? (
-                  <p className="text-sm text-white/70">No picks yet.</p>
-                ) : (
-                  worse.map((wrestler) => (
-                    <div
-                      key={wrestler.id}
-                      className="rounded-xl border border-fuchsia-300/20 bg-black/30 px-3 py-2 text-sm text-white"
-                    >
-                      {wrestler.name}
-                    </div>
-                  ))
-                )}
+
+              <div className="rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.3em] text-white/80">
+                Billy Gunn - Locked
+              </div>
+
+              <div className="rounded-2xl border border-fuchsia-300/30 bg-gradient-to-br from-fuchsia-300/10 to-black/60 p-4">
+                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-fuchsia-200">
+                  <span>Worse Table</span>
+                  <span>{worse.length}</span>
+                </div>
+                <div className="mt-3 flex-1 space-y-2 overflow-y-auto pr-1">
+                  {worse.length === 0 ? (
+                    <p className="text-sm text-white/70">No picks yet.</p>
+                  ) : (
+                    worse.map((wrestler) => (
+                      <div
+                        key={wrestler.id}
+                        className="rounded-xl border border-fuchsia-300/20 bg-black/40 px-3 py-2 text-sm text-white"
+                      >
+                        {wrestler.name}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
