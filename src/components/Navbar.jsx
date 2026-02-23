@@ -8,6 +8,18 @@ const navLinkClass = ({ isActive }) =>
     isActive ? 'text-fuchsia-300' : 'text-zinc-300 hover:text-white',
   ].join(' ')
 
+const ctaButtonClass = ({ isActive }) =>
+  [
+    'min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-base font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300',
+    isActive ? 'border-fuchsia-300 text-white' : '',
+  ].join(' ')
+
+const ctaButtonMobileClass = ({ isActive }) =>
+  [
+    'min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300',
+    isActive ? 'border-fuchsia-300 text-white' : '',
+  ].join(' ')
+
 function Navbar() {
   const [shareStatus, setShareStatus] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -52,14 +64,12 @@ function Navbar() {
           </div>
         </div>
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href="https://www.youtube.com/@WrestleTalk"
-            target="_blank"
-            rel="noreferrer"
-            className="min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-base font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300"
-          >
-            WrestleTalk Podcast
-          </a>
+          <NavLink to="/play" className={ctaButtonClass}>
+            Play
+          </NavLink>
+          <NavLink to="/official" className={ctaButtonClass}>
+            View Live Table
+          </NavLink>
           <button
             type="button"
             onClick={handleShare}
@@ -119,14 +129,20 @@ function Navbar() {
           >
             Official Table
           </NavLink>
-          <a
-            href="https://www.youtube.com/@WrestleTalk"
-            target="_blank"
-            rel="noreferrer"
-            className="min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300"
+          <NavLink
+            to="/play"
+            className={ctaButtonMobileClass}
+            onClick={() => setIsMenuOpen(false)}
           >
-            WrestleTalk Podcast
-          </a>
+            Play
+          </NavLink>
+          <NavLink
+            to="/official"
+            className={ctaButtonMobileClass}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            View Live Table
+          </NavLink>
           <button
             type="button"
             onClick={handleShare}

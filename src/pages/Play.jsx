@@ -696,8 +696,8 @@ function Play() {
 
   return (
     <>
-      <section className="flex flex-col gap-6 pb-24 lg:grid lg:h-[calc(100vh-240px)] lg:grid-cols-[1.35fr_0.85fr] lg:items-stretch lg:gap-8 lg:overflow-hidden lg:pb-0">
-        <div className="rounded-3xl border border-white/10 bg-black/50 p-4 md:p-8 lg:flex lg:h-full lg:flex-col">
+      <section className="flex flex-col gap-6 pb-24 lg:grid lg:grid-cols-[1.35fr_0.85fr] lg:items-start lg:gap-8">
+        <div className="rounded-3xl border border-white/10 bg-black/50 p-4 md:p-8">
           <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
             <span>Current Wrestler</span>
             <span>{remaining} remaining</span>
@@ -726,9 +726,9 @@ function Play() {
               </button>
             </div>
           ) : (
-            <div className="mt-4 space-y-3 md:mt-6 md:space-y-5 lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
-              <div className="grid gap-4 md:grid-cols-[240px_1fr] md:items-start md:gap-6 2xl:grid-cols-[280px_1fr] lg:h-full lg:grid-cols-[260px_1fr]">
-                <div className="space-y-3 lg:flex lg:flex-col">
+            <div className="mt-4 space-y-3 md:mt-6 md:space-y-5">
+              <div className="grid gap-4 md:grid-cols-[240px_1fr] md:items-start md:gap-6 2xl:grid-cols-[280px_1fr]">
+                <div className="space-y-3">
                   <img
                     src={current.imageUrl || current.image}
                     alt={current.name}
@@ -747,10 +747,37 @@ function Play() {
                   </div>
                 </div>
 
-                <div className="space-y-3 md:space-y-5 lg:flex lg:flex-col">
+                <div className="space-y-4 md:space-y-5 lg:flex lg:flex-col">
                   <h2 className="text-3xl font-semibold text-white text-center md:text-left">
                     is {current.name}
                   </h2>
+                  <div className="rounded-2xl border border-white/10 bg-black/60 p-4 shadow-inner">
+                    {wikiExcerpt ? (
+                      <>
+                        <p className="text-sm leading-relaxed text-white/70 line-clamp-4">
+                          {wikiExcerpt}
+                        </p>
+                        <div className="mt-3 flex flex-wrap items-center gap-3">
+                          <span className="text-xs uppercase tracking-[0.3em] text-white/40">
+                            Source: Wikipedia summary
+                          </span>
+                          <a
+                            href={current.wiki}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-lime-300/50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-lime-200 transition hover:border-lime-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200"
+                          >
+                            Read more on Wikipedia
+                            <span aria-hidden="true">-&gt;</span>
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-white/40">
+                        Pulling details from Wikipedia...
+                      </p>
+                    )}
+                  </div>
                   <img
                     src={betterOrWorseLogo}
                     alt="Better or worse than Billy Gunn"
@@ -788,77 +815,37 @@ function Play() {
           )}
         </div>
 
-        <div className="flex flex-col gap-6 lg:h-full lg:overflow-hidden">
-          <article className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 via-black/70 to-black/90 p-6 shadow-2xl lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
-            <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
-              <span>Wikipedia dossier</span>
-              <span className="text-white/40">
-                {current ? 'Auto-updating' : 'Waiting for pick'}
-              </span>
+        <div className="flex flex-col gap-6">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 via-black/70 to-black/90 p-6 shadow-2xl">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-lime-300/30 bg-lime-300/5 px-3 py-2 text-center">
+                <p className="text-[0.65rem] uppercase tracking-[0.3em] text-lime-200/70">
+                  Better
+                </p>
+                <p className="text-2xl font-semibold text-lime-200">
+                  {better.length}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-300/5 px-3 py-2 text-center">
+                <p className="text-[0.65rem] uppercase tracking-[0.3em] text-fuchsia-200/70">
+                  Worse
+                </p>
+                <p className="text-2xl font-semibold text-fuchsia-200">
+                  {worse.length}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-center">
+                <p className="text-[0.65rem] uppercase tracking-[0.3em] text-white/60">
+                  Remaining
+                </p>
+                <p className="text-2xl font-semibold text-white">
+                  {remaining}
+                </p>
+              </div>
             </div>
-            {current ? (
-              <>
-                <h3 className="mt-3 text-2xl font-semibold text-white">
-                  {current.name}
-                </h3>
-                <div className="mt-3 flex-1 overflow-y-auto rounded-2xl border border-white/5 bg-black/30 p-4 text-sm leading-relaxed text-white/70 lg:max-h-[240px]">
-                  {wikiExcerpt ? (
-                    <p>{wikiExcerpt}</p>
-                  ) : (
-                    <p className="text-white/40">Pulling details from Wikipedia...</p>
-                  )}
-                </div>
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  <div className="rounded-2xl border border-lime-300/30 bg-lime-300/5 px-3 py-2 text-center">
-                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-lime-200/70">
-                      Better
-                    </p>
-                    <p className="text-2xl font-semibold text-lime-200">
-                      {better.length}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-fuchsia-300/30 bg-fuchsia-300/5 px-3 py-2 text-center">
-                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-fuchsia-200/70">
-                      Worse
-                    </p>
-                    <p className="text-2xl font-semibold text-fuchsia-200">
-                      {worse.length}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-center">
-                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-white/60">
-                      Remaining
-                    </p>
-                    <p className="text-2xl font-semibold text-white">
-                      {remaining}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                    Source: Wikipedia summary
-                  </p>
-                  <a
-                    href={current.wiki}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-lime-200 transition hover:text-lime-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200"
-                  >
-                    Read full bio
-                    <span aria-hidden="true">-&gt;</span>
-                  </a>
-                </div>
-              </>
-            ) : (
-              <p className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-white/60">
-                Start a run to auto-fill this space with the wrestler's
-                Wikipedia summary, quick stats, and a one-click link for deeper
-                lore dives.
-              </p>
-            )}
-          </article>
+          </div>
 
-          <div className="hidden rounded-3xl border border-white/10 bg-black/50 p-6 md:block lg:flex lg:flex-1 lg:flex-col lg:overflow-hidden">
+          <div className="hidden rounded-3xl border border-white/10 bg-black/50 p-6 md:block">
             <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/60">
               <span>Your Tables</span>
               <span>{better.length + worse.length}</span>
@@ -870,7 +857,7 @@ function Play() {
                   <span>Better Table</span>
                   <span>{better.length}</span>
                 </div>
-                <div className="mt-3 flex-1 space-y-2 overflow-y-auto pr-1">
+                <div className="mt-3 max-h-[160px] space-y-2 overflow-y-auto pr-1 xl:max-h-[220px]">
                   {better.length === 0 ? (
                     <p className="text-sm text-white/70">No picks yet.</p>
                   ) : (
@@ -895,7 +882,7 @@ function Play() {
                   <span>Worse Table</span>
                   <span>{worse.length}</span>
                 </div>
-                <div className="mt-3 flex-1 space-y-2 overflow-y-auto pr-1">
+                <div className="mt-3 max-h-[160px] space-y-2 overflow-y-auto pr-1 xl:max-h-[220px]">
                   {worse.length === 0 ? (
                     <p className="text-sm text-white/70">No picks yet.</p>
                   ) : (

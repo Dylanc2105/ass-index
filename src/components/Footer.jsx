@@ -7,20 +7,24 @@ function Footer() {
         Based on the WrestleTalk Podcast - Not affiliated with the podcast or WWE
       </div>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8 text-xs uppercase tracking-[0.25em] text-white/60 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
           <img
             src={assIndexLogo}
             alt="The Ass Index"
-            className="h-10 w-10 rounded-full border border-white/15 bg-black/40 object-contain p-1"
+            className="h-20 w-20 rounded-full border border-white/15 bg-black/40 object-contain p-1"
           />
+          <a
+            href="https://www.youtube.com/@WrestleTalk"
+            target="_blank"
+            rel="noreferrer"
+            className="min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300"
+          >
+            Listen to the Podcast
+          </a>
         </div>
-        <a
-          href="/podcast"
-          className="text-white transition hover:text-lime-300"
-        >
-          Listen to the Podcast
-        </a>
-        <span className="text-white/50">No copyright intended.</span>
+        <span className="text-center text-white/50 md:text-left">
+          No copyright intended.
+        </span>
       </div>
     </footer>
   )
