@@ -9,7 +9,7 @@ const navLinkClass = ({ isActive }) =>
   ].join(' ')
 
 const podcastButtonClass =
-  'inline-flex items-center justify-center text-center card-lift accent-pulse min-h-[48px] rounded-full border border-fuchsia-300/80 bg-fuchsia-400/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 hover:bg-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200'
+  'inline-flex items-center justify-center text-center card-lift accent-pulse min-h-[48px] rounded-full border border-fuchsia-300/80 bg-fuchsia-400/90 px-5 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 leading-none hover:bg-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200'
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -51,7 +51,7 @@ function Navbar() {
   }
 
   return (
-    <header className="relative overflow-visible border-b border-white/10 bg-black/40 backdrop-blur">
+    <header className="relative z-50 overflow-visible border-b border-white/10 bg-black/40 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 transition-[padding] duration-300 md:px-6 md:py-5">
         <div className="flex w-full items-center gap-6 pl-[58px] md:w-1/2 md:justify-end md:pl-[70px]">
           <div className="hidden items-center gap-6 md:flex">

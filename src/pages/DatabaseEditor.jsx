@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import assIndexLogo from '../assets/placeholders/Ass-Index-Logo.svg'
 import betterOrWorseLogo from '../assets/placeholders/Better-Or-Worse-Logo.svg'
-import useLiveTable, {
-  mergeLiveEntries,
-  sanitizeLiveTable,
-} from '../hooks/useLiveTable.js'
+import useLiveTable from '../hooks/useLiveTable.js'
+import { mergeLiveEntries, sanitizeLiveTable } from '../utils/liveTable.js'
 
 const shuffle = (items) => {
   const clone = [...items]
@@ -33,7 +31,7 @@ const isSameEntry = (sessionEntries, item) => {
 }
 
 function DatabaseEditor() {
-  const { liveTable, loading, error, updateLiveTable } = useLiveTable()
+  const { liveTable, loading, error, updateLiveTable, syncStatus } = useLiveTable()
   const [stage, setStage] = useState('wizard')
   const [sessionMode, setSessionMode] = useState('')
   const [sessionEntries, setSessionEntries] = useState({
@@ -617,11 +615,21 @@ function DatabaseEditor() {
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-      {message ? (
-        <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white/80">
-          {message}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {message ? (
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white/80">
+            {message}
+          </div>
+        ) : null}
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.4em] text-white/60">
+          Sync:{' '}
+          {syncStatus === 'saving'
+            ? 'Saving…'
+            : syncStatus === 'error'
+              ? 'Error – changes cached'
+              : 'Up to date'}
         </div>
-      ) : null}
+      </div>
       {renderContent()}
     </section>
   )

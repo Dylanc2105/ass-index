@@ -1,16 +1,50 @@
-# React + Vite
+# Ass Index
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite front-end for the Ass Index experience: Better or Worse game, live WrestleTalk table, and hidden admin tooling.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+cp .env.example .env.local # optional – configure API + tokens
+npm run dev
+```
 
-## React Compiler
+### Live Table API (shared backend)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To keep the WrestleTalk live table consistent across browsers, run the lightweight JSON API bundled with the repo:
 
-## Expanding the ESLint configuration
+```bash
+LIVE_TABLE_TOKEN=dev-admin-token npm run live-table:server
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This boots an Express server on `http://localhost:4000/live-table`. Point the client at it by setting `VITE_LIVE_TABLE_API` (see `.env.example`). Save operations send an `x-admin-token` header that must match `LIVE_TABLE_TOKEN`.
+
+- Data persists to `live-data/live-table.json`.
+- You can change the path via `LIVE_TABLE_PATH=/some/other.json`.
+- Deploy the server as a standalone service (Fly.io, Render, etc.) for real shared usage.
+
+### Environment Variables
+
+| Variable | Description |
+| --- | --- |
+| `VITE_LIVE_TABLE_API` | Absolute URL to the live table endpoint. Defaults to `/api/live-table`. |
+| `VITE_LIVE_TABLE_API_KEY` | Optional secret sent with each request (header `x-admin-token`). |
+| `LIVE_TABLE_TOKEN` | Server-side copy of the shared secret required for PUT requests. |
+| `LIVE_TABLE_PATH` | Override where the JSON payload is stored on disk. |
+
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Vite dev server (front-end only). |
+| `npm run live-table:server` | Express API that stores/retrieves the live table JSON. |
+| `npm run build` | Production build via Vite. |
+| `npm run preview` | Preview the production build. |
+| `npm run lint` | ESLint. |
+
+## Hidden Admin Flow
+
+- Click the navbar logo 4x to unlock the admin prompt (code `2105`).
+- Use Manual Entry or Play Live to append picks.
+- Updates now hit the shared API so everyone sees the same Better/Worse ledgers.

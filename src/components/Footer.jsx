@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import assIndexLogo from '../assets/placeholders/Ass-Index-Logo.svg'
+import backgroundTexture from '../assets/placeholders/Background.svg'
 
 const podcastLink = 'https://www.youtube.com/@WrestleTalk'
 
@@ -33,11 +34,18 @@ function Footer() {
   }
 
   return (
-    <footer className="border-t border-white/10 bg-gradient-to-b from-black/90 via-zinc-950/95 to-black/95 text-white/80">
-      <div className="border-b border-white/5 bg-black/70 px-6 py-3 text-center text-[0.6rem] uppercase tracking-[0.35em] text-white/50">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-gradient-to-b from-black/90 via-zinc-950/95 to-black/95 text-white/80">
+      <img
+        src={backgroundTexture}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/95" />
+      <div className="relative border-b border-white/5 bg-black/70 px-6 py-3 text-center text-[0.6rem] uppercase tracking-[0.35em] text-white/50">
         Based on the WrestleTalk Podcast – Not affiliated with the podcast or WWE
       </div>
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12">
         <div className="grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
           <div className="flex flex-col gap-6 text-center lg:text-left">
             <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center">

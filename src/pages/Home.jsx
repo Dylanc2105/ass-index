@@ -41,7 +41,7 @@ function Home() {
         <div className="mt-2 flex w-full flex-col items-center gap-[2px] sm:mt-[-6px] sm:gap-3">
           <Link
             to="/play"
-            className="group card-lift glow-outline flex min-h-[48px] w-full max-w-sm items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200 sm:mt-[-10px] sm:w-auto"
+            className="group card-lift glow-outline flex min-h-[48px] w-full max-w-sm items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200 sm:w-auto"
           >
             <span className="sr-only">Play Now</span>
             <img
@@ -52,7 +52,7 @@ function Home() {
           </Link>
           <Link
             to="/official"
-            className="group card-lift glow-outline flex min-h-[48px] w-full max-w-sm items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200 sm:-mt-[45px] sm:w-auto"
+            className="group card-lift glow-outline flex min-h-[48px] w-full max-w-sm items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-200 sm:mt-2 sm:w-auto"
           >
             <span className="sr-only">View Official WrestleTalk Table</span>
             <img
@@ -63,7 +63,7 @@ function Home() {
           </Link>
         </div>
       </div>
-      <div className="relative mx-auto mt-px flex w-full max-w-5xl items-center justify-center px-6 pb-4 sm:-mt-[70px] sm:pb-8">
+      <div className="relative mx-auto mt-px flex w-full max-w-5xl items-center justify-center px-6 pb-2 sm:-mt-[70px] sm:pb-4">
         <img
           src={howToPlayImage}
           alt="How to play"

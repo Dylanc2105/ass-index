@@ -21,7 +21,7 @@ function AppShell() {
       />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
-        <main className="flex-1 px-6 pb-16 pt-2">
+        <main className={`flex-1 px-6 pt-2 ${location.pathname === '/' ? 'pb-10 md:pb-12' : 'pb-16'}`}>
           <div key={location.pathname} className="page-transition h-full">
             <Routes location={location}>
               <Route path="/" element={<Home />} />
