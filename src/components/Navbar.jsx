@@ -8,44 +8,11 @@ const navLinkClass = ({ isActive }) =>
     isActive ? 'nav-ink--active text-white' : 'text-zinc-300 hover:text-white',
   ].join(' ')
 
-const ctaButtonClass = ({ isActive }) =>
-  [
-    'card-lift glow-outline min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-base font-semibold uppercase tracking-[0.2em] text-white/80 hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300',
-    isActive ? 'border-fuchsia-300 text-white' : '',
-  ].join(' ')
-
-const ctaButtonMobileClass = ({ isActive }) =>
-  [
-    'card-lift glow-outline min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/80 hover:border-fuchsia-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300',
-    isActive ? 'border-fuchsia-300 text-white' : '',
-  ].join(' ')
+const podcastButtonClass =
+  'card-lift accent-pulse min-h-[48px] rounded-full border border-fuchsia-300/80 bg-fuchsia-400/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200'
 
 function Navbar() {
-  const [shareStatus, setShareStatus] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const handleShare = async () => {
-    const url = window.location.href
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: 'The Ass Index', url })
-        setShareStatus('Shared')
-        return
-      }
-
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(url)
-        setShareStatus('Link copied')
-        return
-      }
-
-      setShareStatus('Copy failed')
-    } catch (error) {
-      setShareStatus('Share cancelled')
-    } finally {
-      window.setTimeout(() => setShareStatus(''), 2000)
-    }
-  }
 
   return (
     <header className="relative overflow-visible border-b border-white/10 bg-black/40 backdrop-blur">
@@ -64,24 +31,14 @@ function Navbar() {
           </div>
         </div>
         <div className="hidden items-center gap-3 md:flex">
-          <NavLink to="/play" className={ctaButtonClass}>
-            Play
-          </NavLink>
-          <NavLink to="/official" className={ctaButtonClass}>
-            View Live Table
-          </NavLink>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="card-lift accent-pulse min-h-[48px] rounded-full bg-fuchsia-300/90 px-4 py-2 text-base font-semibold uppercase tracking-[0.2em] text-zinc-950 hover:bg-fuchsia-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200"
+          <a
+            href="https://www.youtube.com/@WrestleTalk"
+            target="_blank"
+            rel="noreferrer"
+            className={podcastButtonClass}
           >
-            Share
-          </button>
-          {shareStatus ? (
-            <span className="text-base uppercase tracking-[0.2em] text-lime-300">
-              {shareStatus}
-            </span>
-          ) : null}
+            Listen to the Podcast
+          </a>
         </div>
         <div className="flex items-center md:hidden">
           <button
@@ -129,32 +86,14 @@ function Navbar() {
           >
             Official Table
           </NavLink>
-          <NavLink
-            to="/play"
-            className={ctaButtonMobileClass}
-            onClick={() => setIsMenuOpen(false)}
+          <a
+            href="https://www.youtube.com/@WrestleTalk"
+            target="_blank"
+            rel="noreferrer"
+            className={podcastButtonClass}
           >
-            Play
-          </NavLink>
-          <NavLink
-            to="/official"
-            className={ctaButtonMobileClass}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            View Live Table
-          </NavLink>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="min-h-[48px] rounded-full bg-fuchsia-300/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-fuchsia-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200"
-          >
-            Share
-          </button>
-          {shareStatus ? (
-            <span className="text-sm uppercase tracking-[0.2em] text-lime-300">
-              {shareStatus}
-            </span>
-          ) : null}
+            Listen to the Podcast
+          </a>
         </nav>
       </div>
     </header>
