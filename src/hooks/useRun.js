@@ -335,6 +335,10 @@ function useRun() {
   const current = currentId ? wrestlerMap.get(currentId) : null
   const locked = wrestlerMap.get(LOCKED_ID) || null
   const isComplete = run ? run.index >= run.queue.length : false
+  const durationMs =
+    run && typeof run.startedAt === 'number'
+      ? Math.max((run.updatedAt || run.startedAt) - run.startedAt, 0)
+      : 0
 
   useEffect(() => {
     timerStart.current = Date.now()
@@ -442,6 +446,10 @@ function useRun() {
     startRun,
     totalWrestlers: wrestlers.length,
     hasRun: Boolean(run),
+    runStats: {
+      durationMs,
+      totalDecisions: run ? run.better.length + run.worse.length : 0,
+    },
   }
 }
 
