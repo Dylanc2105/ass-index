@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
 import Play from './pages/Play.jsx'
 import OfficialTable from './pages/OfficialTable.jsx'
+import DatabaseEditor from './pages/DatabaseEditor.jsx'
 import backgroundTexture from './assets/placeholders/Background.svg'
 
 function AppShell() {
@@ -26,6 +27,7 @@ function AppShell() {
               <Route path="/" element={<Home />} />
               <Route path="/play" element={<Play />} />
               <Route path="/official" element={<OfficialTable />} />
+              <Route path="/editor" element={<DatabaseEditor />} />
             </Routes>
           </div>
         </main>

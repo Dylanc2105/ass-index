@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import useRun from '../hooks/useRun.js'
 import MobileTableSheet from '../components/MobileTableSheet.jsx'
 import top100Logo from '../assets/placeholders/top-100.svg'
@@ -135,6 +135,20 @@ function Play() {
 
   const betterSample = useMemo(() => better.slice(0, 10), [better])
   const worseSample = useMemo(() => worse.slice(0, 10), [worse])
+  const betterSampleNames = useMemo(
+    () =>
+      betterSample
+        .map((wrestler) => (typeof wrestler?.name === 'string' ? wrestler.name : ''))
+        .filter(Boolean),
+    [betterSample],
+  )
+  const worseSampleNames = useMemo(
+    () =>
+      worseSample
+        .map((wrestler) => (typeof wrestler?.name === 'string' ? wrestler.name : ''))
+        .filter(Boolean),
+    [worseSample],
+  )
 
   const shareVariants = [
     {
@@ -323,8 +337,8 @@ function Play() {
                   Better Highlights
                 </p>
                 <p className="mt-2 font-medium text-white/90">
-                  {betterSample.length
-                    ? betterSample.join(' • ')
+                  {betterSampleNames.length
+                    ? betterSampleNames.join(' • ')
                     : 'Keep ranking to build this list.'}
                 </p>
               </div>
@@ -333,8 +347,8 @@ function Play() {
                   Worse Highlights
                 </p>
                 <p className="mt-2 font-medium text-white/90">
-                  {worseSample.length
-                    ? worseSample.join(' • ')
+                  {worseSampleNames.length
+                    ? worseSampleNames.join(' • ')
                     : 'Keep ranking to build this list.'}
                 </p>
               </div>
@@ -439,10 +453,12 @@ function Play() {
               </div>
             </div>
             <p className="mt-6 text-sm text-white/70">
-              Better picks: {betterSample.length ? betterSample.join(', ') : 'n/a'}
+              Better picks:{' '}
+              {betterSampleNames.length ? betterSampleNames.join(', ') : 'n/a'}
             </p>
             <p className="mt-2 text-sm text-white/70">
-              Worse picks: {worseSample.length ? worseSample.join(', ') : 'n/a'}
+              Worse picks:{' '}
+              {worseSampleNames.length ? worseSampleNames.join(', ') : 'n/a'}
             </p>
             <p className="mt-4 text-xs uppercase tracking-[0.4em] text-white/40">
               Screenshot this tile &amp; tag @billyassindex
@@ -655,7 +671,7 @@ function Play() {
                   </h3>
                   <p className="text-sm text-white/60">{option.blurb}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.3em] text-white/50">
-                    {option.size} wrestlers · {ratingCount} to rate
+                    {option.size} wrestlers Â· {ratingCount} to rate
                   </p>
                 </div>
               </button>
@@ -1074,7 +1090,7 @@ function Play() {
           onClick={() => setIsTableOpen(true)}
           className="min-h-[48px] w-full rounded-full bg-fuchsia-300 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-fuchsia-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200"
         >
-          ★ View Your Table
+          â˜… View Your Table
         </button>
       </div>
 
@@ -1090,3 +1106,5 @@ function Play() {
 }
 
 export default Play
+
+

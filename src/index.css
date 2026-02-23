@@ -26,10 +26,14 @@
   a,
   button,
   [role="button"] {
-    transition-property: color, border-color, background-color, transform,
-      opacity, box-shadow, filter;
-    transition-duration: var(--duration-medium);
-    transition-timing-function: var(--ease-soft);
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -117,7 +121,7 @@
     opacity: 0;
     transition:
       transform var(--duration-medium) var(--ease-snap),
-      opacity var(--duration-fast) linear;
+      opacity var(--duration-fast) linear !important;
   }
 
   .nav-ink:hover::after,

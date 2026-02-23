@@ -1,5 +1,5 @@
-import { NavLink } from 'react-router-dom'
-import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
 import assIndexLogo from '../assets/placeholders/Ass-Index-Logo.svg'
 
 const navLinkClass = ({ isActive }) =>
@@ -9,10 +9,46 @@ const navLinkClass = ({ isActive }) =>
   ].join(' ')
 
 const podcastButtonClass =
-  'card-lift accent-pulse min-h-[48px] rounded-full border border-fuchsia-300/80 bg-fuchsia-400/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 transition hover:bg-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200'
+  'inline-flex items-center justify-center text-center card-lift accent-pulse min-h-[48px] rounded-full border border-fuchsia-300/80 bg-fuchsia-400/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-950 hover:bg-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200'
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [logoClicks, setLogoClicks] = useState(0)
+  const resetTimerRef = useRef(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handleSecretNavigate = () => {
+    const adminCode = window.prompt('Enter admin code to unlock the database editor')
+    if (adminCode && adminCode.trim() === '2105') {
+      navigate('/editor')
+    }
+  }
+
+  const handleLogoClick = () => {
+    setLogoClicks((prev) => {
+      const next = prev + 1
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current)
+      }
+      resetTimerRef.current = setTimeout(() => {
+        setLogoClicks(0)
+      }, 4000)
+      if (next >= 4) {
+        setLogoClicks(0)
+        handleSecretNavigate()
+        return 0
+      }
+      return next
+    })
+  }
 
   return (
     <header className="relative overflow-visible border-b border-white/10 bg-black/40 backdrop-blur">
@@ -44,7 +80,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="card-lift glow-outline min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white hover:border-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300"
+            className="inline-flex items-center justify-center text-center card-lift glow-outline min-h-[48px] rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white hover:border-fuchsia-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300"
             aria-expanded={isMenuOpen}
             aria-label="Toggle navigation menu"
           >
@@ -52,11 +88,14 @@ function Navbar() {
           </button>
         </div>
       </div>
-      <img
-        src={assIndexLogo}
-        alt="The Ass Index"
-        className="floating-badge absolute left-4 top-[calc(50%+10px)] z-20 h-[140px] w-[140px] -translate-y-1/2 object-contain md:left-6 md:top-[calc(50%+15px)] md:h-[210px] md:w-[210px]"
-      />
+      <button
+        type="button"
+        onClick={handleLogoClick}
+        aria-label="The Ass Index secret access"
+        className="floating-badge absolute left-4 top-[calc(50%+10px)] z-20 h-[140px] w-[140px] -translate-y-1/2 rounded-full border border-transparent transition focus-visible:border-fuchsia-300 focus-visible:outline-none md:left-6 md:top-[calc(50%+15px)] md:h-[210px] md:w-[210px]"
+      >
+        <img src={assIndexLogo} alt="" className="h-full w-full object-contain" />
+      </button>
       <div
         className={`absolute left-0 right-0 top-full z-30 overflow-hidden border-b border-white/10 bg-black/95 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition-all duration-200 md:hidden ${
           isMenuOpen
